@@ -1,0 +1,42 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+  square_images_directory: '%kernel.project_dir%/public/assets/images/square'
+  full_images_directory: '%kernel.project_dir%/public/assets/images/full'
+  avatar_images_directory: '%kernel.project_dir%/public/assets/images/avatar'
+  roles_app:
+    - "administrateur": "ROLE_ADMIN"
+    - "auteur": "ROLE_AUTHOR"
+
+services:
+  #slugger perso
+  app.slugger:
+    class: App\Services\Slugger
+
+  #service post media
+  App\Services\PostFilesService:
+
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
+
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones
+  App\Twig\CategoriesForHeaderExtension:
+    arguments:
+      - '@App\Repository\CategoriesRepository'
+    tags:
+      - { name: twig.extension }
